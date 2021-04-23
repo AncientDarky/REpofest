@@ -5,14 +5,12 @@ using UnityEngine.UI;
 
 public class PlayerInfo : MonoBehaviour
 {
-      Camera mainCam;
+    Camera mainCam;
     Vector3 mainCamPos;
-    [SerializeField] float Power = 5;
-    
-     [SerializeField] public int Ballnumber;// How many ball a player has
+    [SerializeField] float Power = 100;
+    [SerializeField] public int Ballnumber;// How many ball a player has
     Vector3 MousePos;
     GameObject Ball;
-    Rigidbody RigiBall;
     Ray ray;
    
 
@@ -24,7 +22,7 @@ public class PlayerInfo : MonoBehaviour
         mainCam = Camera.main;
         mainCamPos = mainCam.GetComponent<Transform>().position;
         Ball = GameObject.Find("Ballobject");
-        RigiBall = Ball.GetComponent<Rigidbody>();
+        
     }
 
     // Update is called once per frame
@@ -37,24 +35,28 @@ public class PlayerInfo : MonoBehaviour
 
     private void AiminSystem()
     {
+        
         RaycastHit PointofHit;
         MousePos = Input.mousePosition;
         Ray ray = mainCam.ScreenPointToRay(MousePos);
         Vector3 rayDirection = ray.direction;
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Physics.Raycast(mainCamPos, rayDirection, out PointofHit);
+            var instant = Instantiate(Ball);
+            instant.transform.position = mainCamPos;
+            instant.GetComponent<Rigidbody>().AddForce(PointofHit.point.x * Power, PointofHit.point.y * Power, 10 * Power);//accessing and using the rigidbody player shoots the ball
+            
+        }
         if (Physics.Raycast(mainCamPos, rayDirection, out PointofHit))
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-
-                var instant = Instantiate(Ball);
-                instant.transform.position = mainCamPos;
-                instant.GetComponent<Rigidbody>().AddForce(PointofHit.point.x * Power, PointofHit.point.y * Power, 10 * Power);
-
-            }
-            print("Found an object - distance: " + PointofHit.distance);
+            
+            //print("Found an object - distance: " + PointofHit.distance);
+            //print("name is" + name);
 
         }
         Debug.DrawRay(ray.origin, ray.direction * 10, Color.yellow);
+
     }
 
     private static void MenuLeiste()
